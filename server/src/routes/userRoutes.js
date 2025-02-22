@@ -1,0 +1,1 @@
+const {jwtAuth} = require("../middl")
