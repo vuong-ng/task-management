@@ -1,4 +1,4 @@
-const { jwtAuth } = require("../middleware");
+const { jwtAuth } = require("../middleware/jwtAuth.js");
 const taskServices = require("../services/taskServices.js")
 
 module.exports = function (app) {
@@ -14,11 +14,11 @@ module.exports = function (app) {
     app.get("/api/:userid/gettasks", [jwtAuth.verifyToken], taskServices.findAll);
 
     // find task with task id
-    app.post("/api/:userid/tasks/:taskid", [jwtAuth.verifyToken], taskServices.findOne);
+    app.get("/api/:userid/task/:taskid", [jwtAuth.verifyToken], taskServices.findOne);
 
     // update a task with task id
-    app.post("/api/:userid/task/:taskid", [jwtAuth.verifyToken], taskServices.update);
+    app.post("/api/:userid/updatetask/:taskid", [jwtAuth.verifyToken], taskServices.update);
 
     // delete a task by task id
-    app.post("/api/:userid/task/:taskid", [jwtAuth.verifyToken], taskServices.delete);
+    app.post("/api/:userid/deletetask/:taskid", [jwtAuth.verifyToken], taskServices.delete);
 }

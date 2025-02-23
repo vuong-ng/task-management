@@ -1,6 +1,7 @@
 const Pool = require('pg').Pool;
+const path = require('path');
 require('dotenv').config({
-    "path": "../.env"
+    path: path.resolve(__dirname, '../../.env')
 });
 
 const pool = new Pool({
@@ -12,7 +13,7 @@ const pool = new Pool({
 });
 
 pool.on("connect", () => {
-    console.log("Connectoin pool established with Database");
+    console.log("Connection pool established with Database");
 });
 
 module.exports = pool;

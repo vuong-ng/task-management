@@ -5,7 +5,9 @@ const database = require("../config/db.js");
 
 verifyToken = (req, res, next) => {
     const bearer = req.headers['authorization'];
+    
     let token = bearer.split(" ")[1];
+    console.log(token);
 
     if (!token) {
         return res.status(403).send({
@@ -28,5 +30,5 @@ const jwtAuth = {
     verifyToken: verifyToken,
 };
 
-module.exports = jwtAuth;
+module.exports = {jwtAuth};
 
