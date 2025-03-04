@@ -20,5 +20,5 @@ module.exports = function (app) {
     app.post("/api/:userid/updatetask/:taskid", [jwtAuth.verifyToken], taskServices.update);
 
     // delete a task by task id
-    app.post("/api/:userid/deletetask/:taskid", [jwtAuth.verifyToken], taskServices.delete);
+    app.delete("/api/:userid/deletetask/:taskid", [jwtAuth.verifyToken], taskServices.delete);
 }

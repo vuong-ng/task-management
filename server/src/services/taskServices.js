@@ -17,7 +17,7 @@ exports.create = async (req, res) => {
     if (!validateRequest(req, res)) return;
 
     try {
-        const newTask = await db.query("INSERT INTO tasks (user_id, name, description) VALUES ( $1, $2, $3) RETURNING *" , [userid, req.body.name, req.body.description]);
+        const newTask = await db.query("INSERT INTO tasks (user_id, name, description, isComplete) VALUES ( $1, $2, $3, $4) RETURNING *" , [userid, req.body.name, req.body.description, req.body.complete]);
         res.json(newTask.rows);
     } catch (error) {
         console.log(error.message);
@@ -61,7 +61,7 @@ exports.update = async (req, res) => {
     if(!validateRequest(req,res)) return;
 
     try {
-        const updateTask = await db.query("UPDATE tasks SET name = $1 , description = $2 WHERE user_id=$3 AND id=$4 RETURNING *", [req.body.name, req.body.description, userid, taskid])
+        const updateTask = await db.query("UPDATE tasks SET name = $1 , description = $2, isComplete=$3 WHERE user_id=$4 AND id=$5 RETURNING *", [req.body.name, req.body.description, req.body.complete, userid, taskid])
         res.json(updateTask.rows[0]);
     } catch (error) {
         console.log(error.message);

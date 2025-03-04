@@ -14,7 +14,8 @@ const createDataTables = async () => {
         id SERIAL PRIMARY KEY,
         user_id INT,
         name VARCHAR(200) NOT NULL,
-        description TEXT, 
+        description TEXT,
+        isComplete BOOLEAN NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         FOREIGN KEY (user_id) REFERENCES users(id)
 )`;

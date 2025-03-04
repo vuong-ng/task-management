@@ -35,6 +35,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
   console.log(userId);
   const accessToken = localStorage.getItem('token');
   const navigate = useNavigate();
+
   // for adding task
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
@@ -132,12 +133,6 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
   }, [userId, accessToken]);
 
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-  const [newTask, setNewTask] = useState<{ id: number; name: string; description: string, complete: boolean }>({
-    id: 0,
-    name: '',
-    description: '',
-    complete: false,
-  });
 
   const handleOpenAddModal = () => {
     setOpenAddModal(true);
@@ -146,7 +141,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
   const handleCloseAddModal = () => {
     setNewTaskName('');
     setNewTaskDescription('');
-    setUpdatedComplete(false)
+    // setUpdatedComplete(false);
     setOpenAddModal(false);
   }
 
@@ -155,10 +150,10 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
       const response = await axios.post(
         `http://localhost:3000/api/${userId}/updatetask/${updatedTask.id}`,
         {
-          name: updatedTaskName,
+          name: updatedTask.name,
           id:updatedTask.id,
-          description: updatedDescription,
-          complete: updatedComplete,
+          description: updatedTask.description,
+          complete: updatedTask.complete,
         },
         {
           headers: {
@@ -170,7 +165,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
       
       // Update local state
       setTasks(prevTasks =>
-        prevTasks.map(task =>
+        prevTasks.map(task =>               // iterate to find the right task id, else change nothing
           task.id === updatedTask.id
             ? { ...task, complete: !updatedTask.complete }
             : task
@@ -183,7 +178,10 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
 
 
   const handleAddTask = async () => {
-
+    if (!newTaskName.trim()) {
+      alert("Task name is required!");
+      return;
+    }
     try {
       const response = await axios.post(
         `http://localhost:3000/api/${userId}/addtask`,
@@ -191,7 +189,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
           name: newTaskName,
           description: newTaskDescription,
           user_id: userId,
-          complete: false
+          complete: newTaskComplete,
         },
         {
           headers: {
@@ -204,7 +202,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
         id: response.data.id,
         name: newTaskName,
         description: newTaskDescription,
-        complete: false
+        complete: newTaskComplete
       };
       
       // Update tasks state with the new task
@@ -221,23 +219,29 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
       <Typography variant="h4" gutterBottom>
         Task List
       </Typography>
+
       <Button
         onClick={handleOpenAddModal}
         variant='contained'
         color='primary'
-      >Add Task</Button>
+      >
+        Add Task
+      </Button>
+
       <Button
         onClick={handleSignOut}
         variant='contained'
         color='secondary'
         sx={{ ml: 2 }}
-      >Sign Out</Button>
+      >
+        Sign Out
+      </Button>
       
       <List sx={{ width: '100%' }}>
         {tasks.map((task: { id: number; name: string; description:string, complete: boolean}) => (
-          <ListItem key={task.id} sx={{ mb: 2 }}>
+          <ListItem key={task.id} sx={{ mb: 2, width:400}}>
             <Paper 
-              elevation={2} 
+              elevation={3} 
               sx={{ 
                 p: 2, 
                 width: '100%',
@@ -261,7 +265,10 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
               </Typography>
               <Checkbox
                 checked={task.complete}
-                onChange={() => handleToggleComplete(task)}
+                onChange={() => {
+                  task.complete = !task.complete;
+                  handleToggleComplete(task);
+                }}
               />
               <Button 
                 variant="contained" 
@@ -287,6 +294,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
         <DialogContent>
           <Box sx={{ pt: 2 }}>
             <TextField
+              required
               autoFocus
               margin="dense"
               id="name"
@@ -301,7 +309,9 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Checkbox
                 checked={updatedComplete}
-                onChange={(e) => setUpdatedComplete(!updatedComplete)}
+                onChange={(e) => {
+                  setUpdatedComplete(!updatedComplete);
+                }}
               />
               <Typography>Mark as Complete</Typography>
             </Box>
@@ -355,6 +365,7 @@ const TaskList: React.FC<{ userId: number }> = ({ userId }) => {
         <DialogContent>
           <Box sx={{ pt: 2 }}>
             <TextField
+              required
               autoFocus
               margin="dense"
               id="newTaskName"
